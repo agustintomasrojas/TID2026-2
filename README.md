@@ -1,61 +1,28 @@
-# Sintetizador FM USB-MIDI con ESP32-S3
+# Instrumento Musical Digital con ESP32-S3 (TID 2026)
 
-Sintetizador de software de modulación de fase (FM) de 2 operadores en tiempo real que se ejecuta en un microcontrolador ESP32-S3, controlado mediante USB-MIDI nativo desde Linux (PipeWire/ALSA y Reaper).
+Repositorio oficial para el Trabajo de Investigación y Desarrollo (TID) titulado **"Instrumento musical digital con reproducción de SoundFonts (.sf2) en ESP32-S3"**.
 
-## 🛠️ Arquitectura de Hardware
+## 📌 Descripción del Proyecto
+Este proyecto busca diseñar e implementar un prototipo funcional de instrumento musical digital capaz de cargar bancos de sonidos en formato SoundFont (`.sf2`) en la memoria externa PSRAM de un microcontrolador ESP32-S3 y reproducirlos en tiempo real mediante un motor de audio embebido en C/C++.
 
-Este proyecto se basa en el microcontrolador **ESP32-S3**, utilizando sus capacidades USB nativas para recibir datos MIDI en tiempo real sin requerir un chip externo USB a Serial.
+## 🎯 Objetivos Específicos
+1. **OE1 (Fundamentos):** Revisión bibliográfica del formato `.sf2` y fundamentos de audio digital (muestreo, *pitch-shifting* e interpolación).
+2. **OE2 (Hardware):** Ensamblaje del circuito con ESP32-S3, PSRAM, DAC I2S (PCM5102A), amplificador PAM8302, lector microSD y controles físicos.
+3. **OE3 (Motor Embebido):** Desarrollo del motor de audio en C/C++ para lectura desde SD, gestión en PSRAM, envolvente ADSR y polifonía básica.
+4. **OE4 (Verificación):** Mediciones instrumentales de afinación (análisis FFT) y latencia de respuesta.
+5. **OE5 (Demostración):** Validación del instrumento en un contexto real con distintos bancos de sonido.
 
-* **Microcontrolador:** ESP32-S3-DevKitC-1 (aprovechando la interfaz USB nativa).
-* **Amplificación de Audio:** Amplificador de audio clase D PAM8302A alimentado de forma segura a **3.3V** para proteger el puerto USB y evitar sobrecorrientes.
-* **Reconstrucción de Señal:** Generación de audio PWM de 8 bits en el **GPIO 18**, combinada con un filtro paso bajo RC para eliminar el ruido de conmutación de alta frecuencia.
-* **Superficie de Control:** Teclado USB MIDI externo o secuenciador DAW (probado en Ubuntu Linux usando enrutamiento PipeWire/ALSA).
+## 🛠️ Tecnologías y Hardware
+- **Microcontrolador:** ESP32-S3-DevKitC-1 (con PSRAM).
+- **Audio:** DAC I2S PCM5102A y Amplificador PAM8302 con parlante.
+- **Entorno de desarrollo:** Arduino IDE / ESP-IDF en Linux (Ubuntu/Fedora).
+- **Control:** Conectividad USB-MIDI nativa.
 
-## 💻 Arquitectura de Software y DSP
+## 📂 Estructura del Repositorio
+- `esp32_fm_synth/`: Código fuente actual de pruebas para la síntesis FM por software y control USB-MIDI.
+- `docs/`: Informes de avance y documentación técnica.
 
-El firmware personalizado de Arduino implementa un enfoque de pila MIDI pura y ligera con un bucle DSP de software dedicado:
-
-1. **Pila USB-MIDI Nativa:** Utiliza `USBMIDI.h` y `USB.h` para establecer una interfaz MIDI compatible con la clase estándar.
-2. **Motor de Síntesis FM de 2 Operadores:**
-   * Opera a una **frecuencia de muestreo estable de 10 kHz** utilizando acumulación de fase por software.
-   * Calcula dinámicamente las frecuencias de la portadora a partir de los valores de notas MIDI entrantes ($f = 440 \cdot 2^{(d-69)/12}$).
-   * Modula la fase de la portadora utilizando un oscilador modulador secundario controlado mediante parámetros MIDI CC (Rueda de Modulación y controles de timbre).
-3. **Salida PWM por Hardware:** Controla el pin de audio utilizando el periférico PWM LEDC del ESP32 configurado a una frecuencia de portadora de 64 kHz.
-
-## 🚀 Configuración e Instalación
-
-### Prerrequisitos
-
-* **Arduino IDE** con el paquete de placas ESP32 instalado.
-* **Entorno Linux (Ubuntu/Debian)** ejecutando PipeWire o ALSA para el enrutamiento MIDI.
-* **DAW o Enrutador MIDI:** Reaper (o cualquier patchbay compatible con ALSA como `qpwgraph` o `helvum`).
-
-### Compilación y Carga del Firmware
-
-1. Clona este repositorio:
-   ```bash
-   git clone https://github.com/agustintomasrojas/TID2026-2.git
-   cd TID2026-2
-   ```
-2. Abre el sketch del proyecto (`esp32_fm_synth.ino`) en el Arduino IDE.
-3. Selecciona tu placa ESP32-S3 y asegúrate de que el **Modo USB** esté configurado correctamente en las herramientas del IDE.
-4. Compila y carga el sketch en la placa.
-
-### Enrutamiento MIDI en Linux
-
-1. Conecta tu ESP32-S3 a través de su puerto USB nativo.
-2. Abre tu patchbay (`qpwgraph` o `helvum`).
-3. Conecta el puerto de captura de tu controlador MIDI de hardware (`iRig Keys MIDI 1` o similar) al puerto **`ESP32S3_DEV MIDI 1 (playback)`**.
-
-## 📊 Estado del Proyecto y Desarrollo
-
-Desarrollado como parte del *Trabajo de Investigación y Desarrollo (TID)* en la Universidad Adolfo Ibáñez.
-
-* **Fase Actual:** Comunicación USB-MIDI central, lógica de firmware y cálculos de frecuencia/fase DSP completamente implementados y verificados.
-* **Próximos Pasos:** Finalizar la integración de la salida analógica física mediante el filtro RC y el circuito amplificador PAM8302A.
-
-## 👤 Autor
-
-* **Agustín Rojas**
-* **Profesor Guía:** David Aguayo Vera
-* **Institución:** Universidad Adolfo Ibáñez --- Facultad de Ingeniería y Ciencias
+---
+*Estudiante:* Agustín Rojas  
+*Profesor guía:* David Aguayo Vera  
+*Universidad Adolfo Ibáñez*
